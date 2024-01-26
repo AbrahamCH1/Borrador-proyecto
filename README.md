@@ -187,6 +187,7 @@ Serial.println();
   }
 }
 ```
+![](https://github.com/AbrahamCH1/Borrador-proyecto/blob/main/Captura%20de%20pantalla%20(343).png?raw=true)
 
 Para mover el motor elaboré este codigo basandome en otros códigos que encontré en internet.
 ```
