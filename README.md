@@ -1,5 +1,6 @@
 # Borrador-proyecto
-´´
+Este código comprende alrededor del 75% del proyecto. Este código ya cuenta con la parte del motor y también las condiciones de funcionamiento.
+```
 #include <ArduinoJson.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
@@ -185,8 +186,10 @@ Serial.println();
     client.publish("AbrahamDHT", output.c_str());
   }
 }
-´´
-´´
+```
+
+Para mover el motor elaboré este codigo basandome en otros códigos que encontré en internet.
+```
 const int Ap = 4;    // Pin para A+
 const int Am = 16;   // Pin para A-
 const int Bp = 2;    // Pin para B+
@@ -219,4 +222,4 @@ void loop() {
   digitalWrite(Am,LOW) ; digitalWrite(Bm,HIGH);
 
 }
-´´
+```
