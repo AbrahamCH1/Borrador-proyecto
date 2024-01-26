@@ -12,6 +12,7 @@ const int Bp = 14;    // Pin para B+
 const int Bm = 27;   // Pin para B-
 volatile int velocidad;
 volatile int dt;
+int L;
 const int DHT_PIN = 15;
 const int Trigger = 4;   //Pin digital 2 para el Trigger del sensor
 const int Echo = 2;   //Pin digital 3 para el Echo del sensor
@@ -128,22 +129,6 @@ delay(1000);
 TempAndHumidity  data = dhtSensor.getTempAndHumidity();
 long t; //timepo que demora en llegar el eco
 long d; //distancia en centimetros
-if (data.humidity>=0 && data.humidity<=50){
-  delay(dt);
-  digitalWrite(Bm,LOW) ; digitalWrite(Ap,HIGH);
-  delay(dt);
-  digitalWrite(Ap,LOW) ; digitalWrite(Bp,HIGH);
-  delay(dt);
-  digitalWrite(Bp,LOW) ; digitalWrite(Am,HIGH);
-  delay(dt);
-  digitalWrite(Am,LOW) ; digitalWrite(Bm,HIGH);
-}
-else if (data.humidity=100){
-  digitalWrite(Bm,LOW) ; digitalWrite(Ap,LOW);
-  digitalWrite(Ap,LOW) ; digitalWrite(Bp,LOW);
-  digitalWrite(Bp,LOW) ; digitalWrite(Am,LOW);
-  digitalWrite(Am,LOW) ; digitalWrite(Bm,LOW);
-}
 
 digitalWrite(Trigger, HIGH);
 delayMicroseconds(10);          //Enviamos un pulso de 10us
@@ -151,10 +136,34 @@ digitalWrite(Trigger, LOW);
   
 t = pulseIn(Echo, HIGH); //obtenemos el ancho del pulso
 d = t/59;             //escalamos el tiempo a una distancia en cm
+L = ((400-(d))*2000*2000)/1000000;
+
+if (data.humidity>=0 && data.humidity<=50){
+  if (d>=0 && d<=350){
+    delay(dt);
+    digitalWrite(Bm,LOW) ; digitalWrite(Ap,HIGH);
+    delay(dt);
+    digitalWrite(Ap,LOW) ; digitalWrite(Bp,HIGH);
+    delay(dt);
+    digitalWrite(Bp,LOW) ; digitalWrite(Am,HIGH);
+    delay(dt);
+    digitalWrite(Am,LOW) ; digitalWrite(Bm,HIGH);
+  }
+}
+else if (data.humidity=100){
+  digitalWrite(Bm,LOW) ; digitalWrite(Ap,LOW);
+  digitalWrite(Ap,LOW) ; digitalWrite(Bp,LOW);
+  digitalWrite(Bp,LOW) ; digitalWrite(Am,LOW);
+  digitalWrite(Am,LOW) ; digitalWrite(Bm,LOW);
+}
   
 Serial.print("Distancia: ");
 Serial.print(d);      //Enviamos serialmente el valor de la distancia
 Serial.print("cm");
+Serial.println();
+Serial.print("Nivel: ");
+Serial.print(L);
+Serial.print("L");
 Serial.println();
   if (!client.connected()) {
     reconnect();
@@ -171,7 +180,7 @@ Serial.println();
 
     doc["DEVICE"] = "ESP32";
     //doc["Anho"] = 2022;
-    doc["DISTANCIA"] = String(d);
+    doc["LITROS"] = String(L);
     doc["TEMPERATURA"] = String(data.temperature, 1);
     doc["HUMEDAD"] = String(data.humidity, 1);
    
@@ -185,42 +194,5 @@ Serial.println();
     Serial.println(output.c_str());
     client.publish("AbrahamDHT", output.c_str());
   }
-}
-```
-![](https://github.com/AbrahamCH1/Borrador-proyecto/blob/main/Captura%20de%20pantalla%20(343).png?raw=true)
-
-Para mover el motor elaboré este codigo basandome en otros códigos que encontré en internet.
-```
-const int Ap = 4;    // Pin para A+
-const int Am = 16;   // Pin para A-
-const int Bp = 2;    // Pin para B+
-const int Bm = 15;   // Pin para B-
-volatile int velocidad;
-volatile int dt;
-
-
-
-void setup() {
-  // Configurar los pines como salidas
-  pinMode(Ap, OUTPUT);
-  pinMode(Am, OUTPUT);
-  pinMode(Bp, OUTPUT);
-  pinMode(Bm, OUTPUT);
-  velocidad = 100;
-  dt=(600/(4*abs(velocidad)));
-  Serial.println(velocidad);
-}
-
-void loop() {
-
-  delay(dt);
-  digitalWrite(Bm,LOW) ; digitalWrite(Ap,HIGH);
-  delay(dt);
-  digitalWrite(Ap,LOW) ; digitalWrite(Bp,HIGH);
-  delay(dt);
-  digitalWrite(Bp,LOW) ; digitalWrite(Am,HIGH);
-  delay(dt);
-  digitalWrite(Am,LOW) ; digitalWrite(Bm,HIGH);
-
 }
 ```
