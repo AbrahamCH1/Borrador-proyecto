@@ -13,6 +13,7 @@ const int Bm = 27;   // Pin para B-
 volatile int velocidad; //Variable de velocidad
 volatile int dt;    //Variable de Delay
 int L;    //Variable para el calculo de litros
+int Humedad;
 const int DHT_PIN = 15;
 const int Trigger = 4;   //Pin digital 2 para el Trigger del sensor
 const int Echo = 2;   //Pin digital 3 para el Echo del sensor
@@ -127,6 +128,7 @@ void loop() {
 
 delay(1000);
 TempAndHumidity  data = dhtSensor.getTempAndHumidity();
+Humedad = data.humidity;
 long t; //timepo que demora en llegar el eco
 long d; //distancia en centimetros
 
@@ -138,7 +140,7 @@ t = pulseIn(Echo, HIGH); //obtenemos el ancho del pulso
 d = t/59;             //escalamos el tiempo a una distancia en cm
 L = ((400-(d))*2000*2000)/1000000; //Conversión de los valores de "d" a Litros
 
-if (data.humidity>=0 && data.humidity<=50){   //Condición para accionamiento de bomba de agua              
+if (Humedad>=0 && Humedad<=50){   //Condición para accionamiento de bomba de agua              
   if (d>=0 && d<=350){    //Valores de niel de agua entre los que la bomba de agua funcionara
     delay(dt);
     digitalWrite(Bm,LOW) ; digitalWrite(Ap,HIGH);
@@ -150,7 +152,7 @@ if (data.humidity>=0 && data.humidity<=50){   //Condición para accionamiento de
     digitalWrite(Am,LOW) ; digitalWrite(Bm,HIGH);
   }
 }
-else if (data.humidity=100){    //A un 100% de humedad la bomba de agua se apagará
+else if (Humedad=100){    //A un 100% de humedad la bomba de agua se apagará
   digitalWrite(Bm,LOW) ; digitalWrite(Ap,LOW);
   digitalWrite(Ap,LOW) ; digitalWrite(Bp,LOW);
   digitalWrite(Bp,LOW) ; digitalWrite(Am,LOW);
@@ -192,7 +194,7 @@ Serial.println();
     Serial.print("Publish message: ");
     Serial.println(output);
     Serial.println(output.c_str());
-    client.publish("AbrahamDHT", output.c_str());
+    client.publish("SistemaRiego", output.c_str());
   }
 }
 ```
